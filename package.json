@@ -1,0 +1,20 @@
+{
+  "name": "collaber",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "express-livereload": "0.0.24",
+    "express-ws": "^3.0.0",
+    "ws": "^5.1.0"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.0"
+  }
+}

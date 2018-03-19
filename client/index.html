@@ -1,0 +1,14 @@
+<div> 123 </div>
+<script>
+    var ws = new WebSocket('ws://' + window.location.host);
+
+    ws.onopen = function () {
+        console.log('websocket is connected ...')
+        ws.send('connected')
+    }
+
+    ws.onmessage = function (ev) {
+        console.log(ev);
+    }
+
+</script>
