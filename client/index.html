@@ -64,22 +64,34 @@
         const rightHand = document.getElementById('right_hand');
 
         var ws = new WebSocket('ws://' + window.location.host);
+        let data = null;
+        let events = [
+          'triggerdown', 'triggerup',
+          'gripdown', 'gripup',
+          'Xdown', 'Xup',
+          'Adown', 'Aup'
+        ];
         ws.onopen = function () {
             leftHand.addEventListener('triggerdown', (event) => {
-                console.log(event);
+                data = {};
+                let hand_id = event['target']['id'];
+                data['triggerdown'] = {};
+                data['triggerdown']['hand_id'] = hand_id;
+                if (hand_id === 'left_hand') {
+                    data['position'] = leftHand.getAttribute('position');
+                    data['rotation'] = leftHand.getAttribute('position');
+                } else if (hand_id === 'right_hand') {
+                    data['position'] = leftHand.getAttribute('position');
+                    data['rotation'] = leftHand.getAttribute('position');
+                }
+                console.log('JSON.stringify(data): ',JSON.stringify(data));
+                ws.send(JSON.stringify(data));
             });
-            console.log(leftHand, rightHand);
-
-            console.log('websocket is connected ...')
-            //ws.send('connected')
-            console.log('leftHand.getAttribute(position): ',leftHand.getAttribute('position'))
-            console.log('leftHand.getAttribute(rotation): ',leftHand.getAttribute('rotation'))
             setInterval(() => {
-                console.log(leftHand.getAttribute('position'));
-                console.log('leftHand.getAttribute(rotation): ', leftHand.getAttribute('rotation'))
-                ws.send(JSON.stringify(leftHand.getAttribute('rotation')))
-                console.log(leftHand.getAttribute('rotation'));
-            }, 1000)
+                data['position'] = leftHand.getAttribute('position');
+                data['rotation'] = leftHand.getAttribute('rotation');
+                ws.send(JSON.stringify(data));
+            }, 100)
 
         }
 
