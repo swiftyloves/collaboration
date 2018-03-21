@@ -3,13 +3,16 @@ const app = express();
 const http = require('http')
 const WebSocket = require('ws')
 
+const PORT = 3000;
+
 const server = http.createServer(app)
 const wss = new WebSocket.Server({server})
-server.listen(3000)
 
 wss.on('connection', function (ws) {
     ws.on('message', (message) => {
-        console.log('received: %s', message)
+        console.log(typeof(message))
+        message = JSON.parse(message)
+        console.log(message['x'])
     })
     ws.on('close', () => clearInterval(intervalId))
 
@@ -20,3 +23,6 @@ wss.on('connection', function (ws) {
 })
 
 app.use(express.static('client'));
+
+server.listen(PORT);
+console.log(`Listening on port ${PORT}`);
