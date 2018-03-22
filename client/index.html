@@ -65,8 +65,8 @@
         let ws = new WebSocket('ws://' + window.location.host);
         let data = {};
         let allEventTypes = [ 'triggerdown', 'triggerup', 'gripdown', 'gripup'];
-        let leftEventTypes = ['Xdown', 'Xup'];
-        let rightEventTypes = ['Adown', 'Aup'];
+        let leftEventTypes = ['xbuttontouchstart', 'xbuttontouchend'];
+        let rightEventTypes = ['abuttontouchstart', 'abuttontouchend'];
         let registerEventListener = function(eventTypes, hand) {
             for (let i = 0; i < eventTypes.length; i++) {
                 let eventType = eventTypes[i];
@@ -87,7 +87,7 @@
             registerEventListener(allEventTypes, rightHand);
             registerEventListener(leftEventTypes, leftHand);
             registerEventListener(rightEventTypes, rightHand);
-            
+
             setInterval(() => {
                 data['position'] = leftHand.getAttribute('position');
                 data['rotation'] = leftHand.getAttribute('rotation');
