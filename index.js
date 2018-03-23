@@ -15,9 +15,9 @@ let workerWS;
 wss.on('connection', function (ws) {
     ws.on('message', (data) => {
         console.log('data: ', data);
-        if (data === 'HELPER') {
+        if (data === 'HELPER_WS') {
             helperWS = ws;
-        } else if (data === 'WORKER') {
+        } else if (data === 'WORKER_WS') {
             workerWS = ws;
         } else {
             data = JSON.parse(data);

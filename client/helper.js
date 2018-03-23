@@ -23,7 +23,7 @@ let registerEventListener = function(eventTypes, hand) {
     }
 }
 ws.onopen = function () {
-    ws.send('I AM THE HELPER');
+    ws.send('HELPER_WS');
     registerEventListener(allEventTypes, leftHand);
     registerEventListener(allEventTypes, rightHand);
     registerEventListener(leftEventTypes, leftHand);
