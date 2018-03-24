@@ -17,12 +17,18 @@ wss.on('connection', function (ws) {
         console.log('data: ', data);
         if (data === 'HELPER_WS') {
             helperWS = ws;
+            helperWS.on('message', (data) => {
+                // Helepr hand data
+                data = JSON.parse(data);
+                position = data['position'];
+                rotation = data['rotation'];
+            })
         } else if (data === 'WORKER_WS') {
             workerWS = ws;
-        } else {
-            data = JSON.parse(data);
-            position = data['position'];
-            rotation = data['rotation'];
+            workerWS.on('message', (data) => {
+                // Worker video data
+                console.log('worker data: ', data);
+            })
         }
     })
     ws.on('close', () => clearInterval(intervalId))
