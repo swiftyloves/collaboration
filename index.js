@@ -15,29 +15,26 @@ let data = {};
 
 wss.on('connection', function (ws) {
     ws.on('message', (iniitalConnect) => {
-        console.log('server received iniitalConnect: ', iniitalConnect);
         if (iniitalConnect === 'HELPER_WS') {
             helperWS = ws;
             console.log('HELPER_WS');
             helperWS.on('message', (gestureData) => {
                 data['position'] = JSON.parse(gestureData).position;
                 data['rotation'] = JSON.parse(gestureData).rotation;
+                // wss.broadcast(data);
             })
         } else if (iniitalConnect === 'WORKER_WS') {
             workerWS = ws;
             console.log('WORKER_WS');
             workerWS.on('message', (videoData) => {
                 // Worker video data
-                wss.broadcast(videoData);
+                data['signal'] = videoData;
+                wss.broadcast(JSON.stringify(data));
             })
         }
     })
     // ws.on('close', () => clearInterval(intervalId))
     ws.on('error', (err) => console.log(err));
-    // let intervalId = setInterval(
-    //     () => ws.send(`${new Date()}`),
-    //     1000
-    // )
 });
 wss.broadcast = function(data) {
   this.clients.forEach(function(client) {

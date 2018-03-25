@@ -49,14 +49,15 @@ function start(isCaller) {
     peerConnection.addStream(localStream);
 
     if(isCaller) {
-    peerConnection.createOffer().then(createdDescription).catch(errorHandler);
+        peerConnection.createOffer().then(createdDescription).catch(errorHandler);
     }
 }
 
-function gotMessageFromServer(message) {
+function gotMessageFromServer(event) {
     if(!peerConnection) start(false);
 
-    var signal = JSON.parse(message.data);
+    var data = JSON.parse(event.data);
+    signal = JSON.parse(data['signal']);
 
     // Ignore messages from ourself
     if(signal.uuid == uuid) return;
@@ -65,7 +66,7 @@ function gotMessageFromServer(message) {
         peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
             // Only create answers in response to offers
             if(signal.sdp.type == 'offer') {
-            peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
+                peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
             }
         }).catch(errorHandler);
     } else if(signal.ice) {
