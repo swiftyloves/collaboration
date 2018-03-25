@@ -11,23 +11,24 @@ let position = null;
 let rotation = null;
 let helperWS;
 let workerWS;
+let data = {};
 
 wss.on('connection', function (ws) {
-    ws.on('message', (data) => {
-        console.log('data: ', data);
-        if (data === 'HELPER_WS') {
+    ws.on('message', (iniitalConnect) => {
+        console.log('server received iniitalConnect: ', iniitalConnect);
+        if (iniitalConnect === 'HELPER_WS') {
             helperWS = ws;
-            helperWS.on('message', (data) => {
-                // Helepr hand data
-                data = JSON.parse(data);
-                position = data['position'];
-                rotation = data['rotation'];
+            console.log('HELPER_WS');
+            helperWS.on('message', (gestureData) => {
+                data['position'] = JSON.parse(gestureData).position;
+                data['rotation'] = JSON.parse(gestureData).rotation;
             })
-        } else if (data === 'WORKER_WS') {
+        } else if (iniitalConnect === 'WORKER_WS') {
             workerWS = ws;
-            workerWS.on('message', (data) => {
+            console.log('WORKER_WS');
+            workerWS.on('message', (videoData) => {
                 // Worker video data
-                console.log('worker data: ', data);
+                wss.broadcast(videoData);
             })
         }
     })
@@ -37,14 +38,13 @@ wss.on('connection', function (ws) {
     //     () => ws.send(`${new Date()}`),
     //     1000
     // )
-    wss.broadcast = function(data) {
-      this.clients.forEach(function(client) {
-        if(client.readyState === WebSocket.OPEN) {
-          client.send(data);
-        }
-      });
-    };
 });
-
+wss.broadcast = function(data) {
+  this.clients.forEach(function(client) {
+    if(client.readyState === WebSocket.OPEN) {
+        client.send(data);
+    }
+  });
+};
 app.use('/', express.static('client'));
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
