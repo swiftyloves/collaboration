@@ -59,20 +59,31 @@ function gotMessageFromServer(event) {
     if(!peerConnection) start(false);
 
     var data = JSON.parse(event.data);
-    var signal = JSON.parse(data['signal']);
+    if (data.signal) {
+        var signal = JSON.parse(data['signal']);
 
-    // Ignore messages from ourself
-    if(signal.uuid == uuid) return;
+        // Ignore messages from ourself
+        if(signal.uuid == uuid) return;
 
-    if(signal.sdp) {
-        peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
-            // Only create answers in response to offers
-            if(signal.sdp.type == 'offer') {
-                peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
-            }
-        }).catch(errorHandler);
-    } else if(signal.ice) {
-        peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+        if(signal.sdp) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+                // Only create answers in response to offers
+                if(signal.sdp.type == 'offer') {
+                    peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
+                }
+            }).catch(errorHandler);
+        } else if(signal.ice) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+        }
+    }
+
+    // Hand gesture
+    console.log('hand gesture:');
+    if (data.position) {
+        var position = data['position'];
+        var rotation = data['rotation'];
+        console.log(position);
+        console.log(rotation);
     }
 }
 
