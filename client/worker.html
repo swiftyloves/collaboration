@@ -13,7 +13,7 @@
   <body>
     <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
     <a-scene fog="color: #bc483e; near: 0; far: 65;">
-      <video id="remoteVideo" autoplay style="width:100%;display: block;"></video>
+      <video id="localVideo" autoplay style="width:100%;display: block;"></video>
       <!-- Hands -->
       <a-entity id="left_hand" hand-controls="left" aabb-collider="objects: .cube;" grab></a-entity>
       <a-entity id="right_hand" hand-controls="right" aabb-collider="objects: .cube;" grab></a-entity>

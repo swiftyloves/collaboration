@@ -1,4 +1,4 @@
-//var localVideo;
+var localVideo;
 var localStream;
 var remoteVideo;
 var peerConnection;
@@ -15,6 +15,7 @@ var peerConnectionConfig = {
 function pageReady() {
     uuid = createUUID();
 
+    localVideo = document.getElementById('localVideo');
     remoteVideo = document.getElementById('remoteVideo');
 
     // serverConnection = new WebSocket('wss://' + window.location.hostname + ':8443');
@@ -38,6 +39,9 @@ function pageReady() {
 
 function getUserMediaSuccess(stream) {
   localStream = stream;
+  if (localVideo) {
+    localVideo.srcObject = stream;
+  }
 }
 
 function start(isCaller) {

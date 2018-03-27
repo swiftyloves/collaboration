@@ -17,7 +17,7 @@ let registerEventListener = function(eventTypes, hand) {
             data[eventType]['hand_id'] = hand_id;
             data['position'] = hand.getAttribute('position');
             data['rotation'] = hand.getAttribute('position');
-            //console.log('JSON.stringify(data): ',JSON.stringify(data));
+            console.log('JSON.stringify(data): ',JSON.stringify(data));
             //ws.send(JSON.stringify(data));
         });
     }
@@ -32,8 +32,8 @@ ws.onopen = function () {
     setInterval(() => {
         data['position'] = leftHand.getAttribute('position');
         data['rotation'] = leftHand.getAttribute('rotation');
-        //console.log('position: ', data['position']);
-        //console.log('rotation: ', data['rotation']);
+        console.log('position: ', data['position']);
+        console.log('rotation: ', data['rotation']);
         // ws.send(JSON.stringify(data));
     }, 2000)
 
