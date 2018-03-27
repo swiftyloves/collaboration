@@ -19,9 +19,10 @@ wss.on('connection', function (ws) {
             helperWS = ws;
             console.log('HELPER_WS');
             helperWS.on('message', (gestureData) => {
+              console.log('gestureData: ',gestureData);
                 data['position'] = JSON.parse(gestureData).position;
                 data['rotation'] = JSON.parse(gestureData).rotation;
-                // wss.broadcast(data);
+                wss.broadcast(JSON.stringify(data));
             })
         } else if (iniitalConnect === 'WORKER_WS') {
             workerWS = ws;
