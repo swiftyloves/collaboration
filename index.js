@@ -19,10 +19,13 @@ wss.on('connection', function (ws) {
             helperWS = ws;
             console.log('HELPER_WS');
             helperWS.on('message', (gestureData) => {
-              console.log('gestureData: ',gestureData);
-                data['position'] = JSON.parse(gestureData).position;
-                data['rotation'] = JSON.parse(gestureData).rotation;
-                wss.broadcast(JSON.stringify(data));
+                console.log('gestureData: ',gestureData);
+                // gestureData = JSON.parse(gestureData);
+                // data['handId'] = gestureData.handId
+                // data['position'] = gestureData.position;
+                // data['rotation'] = gestureData.rotation;
+                // wss.broadcast(JSON.stringify(data));
+                wss.broadcast(gestureData);
             })
         } else if (iniitalConnect === 'WORKER_WS') {
             workerWS = ws;

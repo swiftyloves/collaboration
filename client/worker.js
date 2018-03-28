@@ -4,6 +4,12 @@ var remoteVideo;
 var peerConnection;
 var uuid;
 var serverConnection;
+var leftHand = document.getElementById('left_hand');
+var rightHand = document.getElementById('right_hand');
+
+leftHand.emit('controllerconnected', {name: 'manual'});
+rightHand.emit('controllerconnected', {name: 'manual'});
+
 
 var peerConnectionConfig = {
     'iceServers': [
@@ -12,18 +18,20 @@ var peerConnectionConfig = {
     ]
 };
 
+rightHand.visible = true;
+leftHand.visible = true;
+
 function pageReady() {
     uuid = createUUID();
 
     localVideo = document.getElementById('localVideo');
     remoteVideo = document.getElementById('remoteVideo');
 
-    // serverConnection = new WebSocket('wss://' + window.location.hostname + ':8443');
-    serverConnection = new WebSocket('ws://' + window.location.host);
-    serverConnection.onmessage = gotMessageFromServer;
-    serverConnection.onopen = function () {
-        serverConnection.send('WORKER_WS');
-    }
+    // serverConnection = new WebSocket('ws://' + window.location.host);
+    // serverConnection.onmessage = gotMessageFromServer;
+    // serverConnection.onopen = function () {
+    //     serverConnection.send('WORKER_WS');
+    // }
 
     var constraints = {
         video: true,
@@ -45,6 +53,7 @@ function getUserMediaSuccess(stream) {
 }
 
 function start(isCaller) {
+  console.log('start');
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     peerConnection.onicecandidate = gotIceCandidate;
     peerConnection.ontrack = gotRemoteStream;
@@ -59,6 +68,7 @@ function gotMessageFromServer(event) {
     if(!peerConnection) start(false);
 
     var data = JSON.parse(event.data);
+    console.log('worker js event.data', data);
     if (data.signal) {
         var signal = JSON.parse(data['signal']);
 
@@ -79,11 +89,18 @@ function gotMessageFromServer(event) {
 
     // Hand gesture
     console.log('hand gesture:');
-    if (data.position) {
+    if (data.type) {
+        console.log('data.data:',data.data);
+        /*let handId = data['handId'];
         var position = data['position'];
         var rotation = data['rotation'];
+        console.log(handId);
         console.log(position);
         console.log(rotation);
+        if (handId === 'right_hand') {
+            rightHand.setAttribute('position',  position);
+            rightHand.setAttribute('rotation',  rotation);
+        }*/
     }
 }
 

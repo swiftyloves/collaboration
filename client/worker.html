@@ -15,9 +15,11 @@
     <a-scene fog="color: #bc483e; near: 0; far: 65;">
       <video id="localVideo" autoplay style="width:100%;display: block;"></video>
       <!-- Hands -->
-      <a-entity id="left_hand" hand-controls="left" aabb-collider="objects: .cube;" grab></a-entity>
-      <a-entity id="right_hand" hand-controls="right" aabb-collider="objects: .cube;" grab></a-entity>
+      <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="" aabb-collider="objects: .cube;" grab></a-entity>
+      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="" aabb-collider="objects: .cube;" grab></a-entity>
+      <a-camera></a-camera>
     </a-scene>
+    <script src="worker_network_controls.js"></script>
     <script src="worker.js"></script>
     <script type="text/javascript">
         pageReady();

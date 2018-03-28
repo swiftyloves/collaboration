@@ -1,7 +1,7 @@
 
-const leftHand = document.getElementById('left_hand');
-const rightHand = document.getElementById('right_hand');
-let ws = new WebSocket('ws://' + window.location.host);
+// const leftHand = document.getElementById('left_hand');
+// const rightHand = document.getElementById('right_hand');
+// var ws = new WebSocket('ws://' + window.location.host);
 
 let data = {};
 let allEventTypes = [ 'triggerdown', 'triggerup', 'gripdown', 'gripup'];
@@ -12,13 +12,14 @@ let registerEventListener = function(eventTypes, hand) {
         let eventType = eventTypes[i];
         hand.addEventListener(eventType, (event) => {
             data = {};
-            let hand_id = event['target']['id'];
-            data[eventType] = {};
-            data[eventType]['hand_id'] = hand_id;
+            let handId = event['target']['id'];
+            // data[eventType] = {};
+            data['eventType'] = eventType;
+            data['handId'] = handId;
             data['position'] = hand.getAttribute('position');
-            data['rotation'] = hand.getAttribute('position');
-            console.log('JSON.stringify(data): ',JSON.stringify(data));
-            ws.send(JSON.stringify(data));
+            data['rotation'] = hand.getAttribute('rotation');
+            //console.log('JSON.stringify(data): ',JSON.stringify(data));
+            //ws.send(JSON.stringify(data));
         });
     }
 }
@@ -30,11 +31,18 @@ ws.onopen = function () {
     registerEventListener(rightEventTypes, rightHand);
 
     setInterval(() => {
-        data['position'] = leftHand.getAttribute('position');
-        data['rotation'] = leftHand.getAttribute('rotation');
-        console.log('position: ', data['position']);
-        console.log('rotation: ', data['rotation']);
-        ws.send(JSON.stringify(data));
+        // data['handId'] = 'left_hand';
+        // data['position'] = leftHand.getAttribute('position');
+        // data['rotation'] = leftHand.getAttribute('rotation');
+        // console.log('position: ', data['position']);
+        // console.log('rotation: ', data['rotation']);
+        // ws.send(JSON.stringify(data));
+        data['handId'] = 'right_hand';
+        data['position'] = rightHand.getAttribute('position');
+        data['rotation'] = rightHand.getAttribute('rotation');
+        //console.log('position: ', data['position']);
+        //console.log('rotation: ', data['rotation']);
+        // ws.send(JSON.stringify(data));
     }, 2000)
 
 }
