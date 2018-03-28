@@ -96,6 +96,42 @@ registerComponent('remote-oculus-touch-controls', {
         this.el.emit('controllerconnected', {name: this.name, component: this});
     }
   },
+  gotMessageFromServer (message) {
+    if(!peerConnection) start(false);
+
+    var data = JSON.parse(message.data);
+    if (data.signal) {
+        var signal = JSON.parse(data['signal']);
+
+        // Ignore messages from ourself
+        if(signal.uuid == uuid) return;
+
+        if(signal.sdp) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+                // Only create answers in response to offers
+                if(signal.sdp.type == 'offer') {
+                    peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
+                }
+            }).catch(errorHandler);
+        } else if(signal.ice) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+        }
+    }
+
+    // Hand gesture
+    if (data.type && data.data) {
+        let hand = data.data.target;
+        let position = data.data.position;
+        let rotation = data.data.rotation;
+        if (hand === 'left_hand') {
+            leftHand.setAttribute('position', position);
+            leftHand.setAttribute('rotation', rotation);
+        } else if (hand === "right_hand") {
+            rightHand.setAttribute('position', position);
+            rightHand.setAttribute('rotation', rotation);
+        }
+    }
+  },
 
   addEventListeners: function () {
     var el = this.el;
