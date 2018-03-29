@@ -15,15 +15,20 @@ function bind (fn, ctx/* , arg1, arg2 */) {
   })(Array.prototype.slice.call(arguments, 2));
 };
 
-var TOUCH_CONTROLLER_MODEL_BASE_URL = 'https://cdn.aframe.io/controllers/oculus/oculus-touch-controller-';
-var TOUCH_CONTROLLER_MODEL_OBJ_URL_L = TOUCH_CONTROLLER_MODEL_BASE_URL + 'left.obj';
-var TOUCH_CONTROLLER_MODEL_OBJ_MTL_L = TOUCH_CONTROLLER_MODEL_BASE_URL + 'left.mtl';
-var TOUCH_CONTROLLER_MODEL_OBJ_URL_R = TOUCH_CONTROLLER_MODEL_BASE_URL + 'right.obj';
-var TOUCH_CONTROLLER_MODEL_OBJ_MTL_R = TOUCH_CONTROLLER_MODEL_BASE_URL + 'right.mtl';
-
 var GAMEPAD_ID_PREFIX = 'Oculus Touch';
 
 var PIVOT_OFFSET = {x: 0, y: -0.015, z: 0.04};
+
+registerComponent('remote-oculus-camera', {
+  init: function() {
+    setInterval(() => {
+        ws.send(JSON.stringify({type:'camera', data: {
+          position:this.el.getAttribute('position'),
+          rotation:this.el.getAttribute('rotation')
+        }}));
+    }, 1000);
+  }
+});
 
 /**
  * Oculus Touch controls.
@@ -37,7 +42,6 @@ registerComponent('remote-oculus-touch-controls', {
     buttonColor: {type: 'color', default: '#999'},  // Off-white.
     buttonTouchColor: {type: 'color', default: '#8AB'},
     buttonHighlightColor: {type: 'color', default: '#2DF'},  // Light blue.
-    model: {default: true},
     rotationOffset: {default: 0}
   },
 
@@ -62,7 +66,6 @@ registerComponent('remote-oculus-touch-controls', {
   },
 
   bindMethods: function () {
-    this.onModelLoaded = bind(this.onModelLoaded, this);
     this.onControllersUpdate = bind(this.onControllersUpdate, this);
     this.checkIfControllerPresent = bind(this.checkIfControllerPresent, this);
     this.onAxisMoved = bind(this.onAxisMoved, this);
@@ -84,8 +87,11 @@ registerComponent('remote-oculus-touch-controls', {
     this.emitIfAxesChanged = emitIfAxesChanged;
     this.checkControllerPresentAndSetup = checkControllerPresentAndSetup;
     setInterval(() => {
-        // this.emitOverWebsocket('base', {});
-    }, 1000);
+        this.emitOverWebsocket('base', {
+          position:this.el.getAttribute('position'),
+          rotation:this.el.getAttribute('rotation')
+        });
+    }, 50);
 
     console.log('helper initialized');
     this.serverConnection = new WebSocket('ws://' + window.location.host);
@@ -141,7 +147,6 @@ registerComponent('remote-oculus-touch-controls', {
     el.addEventListener('touchstart', this.onButtonTouchStart);
     el.addEventListener('touchend', this.onButtonTouchEnd);
     el.addEventListener('axismove', this.onAxisMoved);
-    el.addEventListener('model-loaded', this.onModelLoaded);
     this.controllerEventsActive = true;
   },
 
@@ -153,7 +158,6 @@ registerComponent('remote-oculus-touch-controls', {
     el.removeEventListener('touchstart', this.onButtonTouchStart);
     el.removeEventListener('touchend', this.onButtonTouchEnd);
     el.removeEventListener('axismove', this.onAxisMoved);
-    el.removeEventListener('model-loaded', this.onModelLoaded);
     this.controllerEventsActive = false;
   },
 
@@ -173,28 +177,9 @@ registerComponent('remote-oculus-touch-controls', {
     this.removeControllersUpdateListener();
   },
 
-  updateControllerModel: function () {
-    var objUrl, mtlUrl;
-    if (!this.data.model) { return; }
-    if (this.data.hand === 'right') {
-      objUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_URL_R + ')';
-      mtlUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_MTL_R + ')';
-    } else {
-      objUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_URL_L + ')';
-      mtlUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_MTL_L + ')';
-    }
-    this.el.setAttribute('obj-model', {obj: objUrl, mtl: mtlUrl});
-  },
-
   injectTrackedControls: function () {
     var data = this.data;
     var offset = data.hand === 'right' ? -90 : 90;
-    this.el.setAttribute('tracked-controls', {
-      id: data.hand === 'right' ? 'Oculus Touch (Right)' : 'Oculus Touch (Left)',
-      controller: 0,
-      rotationOffset: data.rotationOffset !== -999 ? data.rotationOffset : offset
-    });
-    this.updateControllerModel();
   },
 
   addControllersUpdateListener: function () {
@@ -211,27 +196,8 @@ registerComponent('remote-oculus-touch-controls', {
   },
 
   onButtonChanged: function (evt) {
-    // console.log('onButtonChanged');
     var button = this.mapping[this.data.hand].buttons[evt.detail.id];
-    var buttonMeshes = this.buttonMeshes;
-    var analogValue;
-
-    if (!button) { return; }
-
-    if (button === 'trigger' || button === 'grip') { analogValue = evt.detail.state.value; }
-
-    // Update trigger and/or grip meshes, if any.
-    if (buttonMeshes) {
-      if (button === 'trigger' && buttonMeshes.trigger) {
-        buttonMeshes.trigger.rotation.x = -analogValue * (Math.PI / 24);
-      }
-      if (button === 'grip' && buttonMeshes.grip) {
-        buttonMeshes.grip.rotation.y = (this.data.hand === 'left' ? -1 : 1) * analogValue * (Math.PI / 60);
-      }
-    }
-
-
-
+    if(!button) { return; }
     // Pass along changed event with button state, using the buttom mapping for convenience.
     this.emitOverWebsocket(button + 'changed', evt.detail.state);
   },
@@ -252,42 +218,9 @@ registerComponent('remote-oculus-touch-controls', {
         ws.send(JSON.stringify({type}))
     }
   },
-  onModelLoaded: function (evt) {
-    var controllerObject3D = evt.detail.model;
-    var buttonMeshes;
-    if (!this.data.model) { return; }
-
-    var leftHand = this.data.hand === 'left';
-    buttonMeshes = this.buttonMeshes = {};
-
-    buttonMeshes.grip = controllerObject3D.getObjectByName(leftHand ? 'buttonHand_oculus-touch-controller-left.004' : 'buttonHand_oculus-touch-controller-right.005');
-    buttonMeshes.thumbstick = controllerObject3D.getObjectByName(leftHand ? 'stick_oculus-touch-controller-left.007' : 'stick_oculus-touch-controller-right.004');
-    buttonMeshes.trigger = controllerObject3D.getObjectByName(leftHand ? 'buttonTrigger_oculus-touch-controller-left.005' : 'buttonTrigger_oculus-touch-controller-right.006');
-    buttonMeshes.xbutton = controllerObject3D.getObjectByName('buttonX_oculus-touch-controller-left.002');
-    buttonMeshes.abutton = controllerObject3D.getObjectByName('buttonA_oculus-touch-controller-right.002');
-    buttonMeshes.ybutton = controllerObject3D.getObjectByName('buttonY_oculus-touch-controller-left.001');
-    buttonMeshes.bbutton = controllerObject3D.getObjectByName('buttonB_oculus-touch-controller-right.003');
-
-    // Offset pivot point
-    controllerObject3D.position = PIVOT_OFFSET;
-  },
 
   onAxisMoved: function (evt) {
     this.emitIfAxesChanged(this, this.mapping[this.data.hand].axes, evt);
-  },
-
-  updateModel: function (buttonName, evtName) {
-    if (!this.data.model) { return; }
-    this.updateButtonModel(buttonName, evtName);
-  },
-
-  updateButtonModel: function (buttonName, state) {
-    var color = (state === 'up' || state === 'touchend') ? this.data.buttonColor : state === 'touchstart' ? this.data.buttonTouchColor : this.data.buttonHighlightColor;
-    var buttonMeshes = this.buttonMeshes;
-    if (!this.data.model) { return; }
-    if (buttonMeshes && buttonMeshes[buttonName]) {
-      buttonMeshes[buttonName].material.color.set(color);
-    }
   }
 });
 
@@ -321,9 +254,6 @@ function onButtonEvent (id, evtName, component, hand) {
   var mapping = hand ? component.mapping[hand] : component.mapping;
   var buttonName = mapping.buttons[id];
   component.emitOverWebsocket(buttonName + evtName);
-  if (component.updateModel) {
-    component.updateModel(buttonName, evtName);
-  }
 };
 function checkControllerPresentAndSetup(component, idPrefix, queryObject) {
   var el = component.el;

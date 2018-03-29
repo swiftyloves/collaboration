@@ -9,17 +9,22 @@
     <script src="components/grab.js"></script>
     <script src="components/ground.js"></script>
     <script src="shaders/skyGradient.js"></script>
+        <script src="worker_network_controls.js"></script>
   </head>
-  <body>
+  <body style="background-color: #777">
     <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
+
     <a-scene fog="color: #bc483e; near: 0; far: 65;">
       <video id="localVideo" autoplay style="width:100%;display: block;"></video>
+      <!-- <a-box position="0 2 0" rotation="0 45 45" scale="2 4 2">
+        <a-sphere position="1 0 -3"></a-sphere>
+      </a-box> -->
       <!-- Hands -->
-      <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="" aabb-collider="objects: .cube;" grab></a-entity>
-      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="" aabb-collider="objects: .cube;" grab></a-entity>
-      <a-camera></a-camera>
+      <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="hand:left"></a-entity>
+      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right"></a-entity>
+      <a-camera remote-oculus-camera-receiver=""></a-camera>
     </a-scene>
-    <script src="worker_network_controls.js"></script>
+
     <script src="worker.js"></script>
     <script type="text/javascript">
         pageReady();

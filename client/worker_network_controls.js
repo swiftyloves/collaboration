@@ -38,6 +38,20 @@ var PIVOT_OFFSET = {x: 0, y: -0.015, z: 0.04};
  // console.log(leftHand);
  // console.log(this.el);
  // console.log(leftHand.getAttribute('position'));
+ registerComponent('remote-oculus-camera-receiver', {
+   init: function() {
+     ws.addEventListener('message',(message) => {
+       var data = JSON.parse(message.data);
+       if(data.type === 'camera') {
+         const {position, rotation} = data.data;
+         if(this.el) {
+           this.el.setAttribute('position', position);
+           this.el.setAttribute('rotation', rotation);
+         }
+       }
+     });
+   }
+ });
 
 registerComponent('remote-oculus-touch-controls-receiver', {
   schema: {
@@ -70,14 +84,33 @@ registerComponent('remote-oculus-touch-controls-receiver', {
   },
 
   init: function () {
-    console.log('initialized')
-    this.serverConnection = new WebSocket('ws://' + window.location.host);
+    this.serverConnection = ws;
     serverConnection = this.serverConnection;
-    this.serverConnection.onmessage = bind(this.gotMessageFromServer, this);
+    this.serverConnection.addEventListener('message', bind(this.gotMessageFromServer, this));
     this.serverConnection.onopen =  () => {
         this.serverConnection.send('WORKER_WS');
         this.el.emit('controllerconnected', {name: this.name, component: this});
+        var data = this.data;
+        var offset = data.hand === 'right' ? -90 : 90;
+        this.el.setAttribute('tracked-controls', {
+          id: data.hand === 'right' ? 'Oculus Touch (Right)' : 'Oculus Touch (Left)',
+          controller: 0,
+          rotationOffset: data.rotationOffset !== -999 ? data.rotationOffset : offset
+        });
+        this.updateControllerModel();
     }
+  },
+  updateControllerModel: function () {
+    var objUrl, mtlUrl;
+    if (!this.data.model) { return; }
+    if (this.data.hand === 'right') {
+      objUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_URL_R + ')';
+      mtlUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_MTL_R + ')';
+    } else {
+      objUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_URL_L + ')';
+      mtlUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_MTL_L + ')';
+    }
+    this.el.setAttribute('obj-model', {obj: objUrl, mtl: mtlUrl});
   },
   gotMessageFromServer (message) {
     if(!peerConnection) start(false);
