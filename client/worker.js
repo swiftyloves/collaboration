@@ -7,19 +7,12 @@ var serverConnection;
 var leftHand = document.getElementById('left_hand');
 var rightHand = document.getElementById('right_hand');
 
-leftHand.emit('controllerconnected', {name: 'manual'});
-rightHand.emit('controllerconnected', {name: 'manual'});
-
-
 var peerConnectionConfig = {
     'iceServers': [
         {'urls': 'stun:stun.stunprotocol.org:3478'},
         {'urls': 'stun:stun.l.google.com:19302'},
     ]
 };
-
-rightHand.visible = true;
-leftHand.visible = true;
 
 function pageReady() {
     uuid = createUUID();
