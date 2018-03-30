@@ -159,30 +159,10 @@ registerComponent('remote-oculus-touch-controls-receiver', {
         let hand = data.data.target;
         let position = data.data.position;
         let rotation = data.data.rotation;
-        let original_posiiton = this.el.getAttribute('position');
 
-        if (hand === 'left_hand') {
-            // leftHand.emit(eventName)
-            leftHand.setAttribute('position', position);
-            leftHand.setAttribute('rotation', rotation);
-        } else if (hand === "right_hand") {
-            console.log('hand:',hand);
-            // console.log('position: ', position);
-            position = position.x + " " + position.y + " " + position.z;
-            //console.log('position:', position);
-            //rightHand.setAttribute('animation', 'property: position; to:' + position);
-            // rightHand.setAttribute('animation', 'property: position; to: ' + position);
-            // rightHand.setAttribute('rotation', rotation);
-            //rightHand.flushToDOM();
-            // console.log(rightHand.getAttribute('position'));
-            let randomPosition = Math.random() + ' ' + Math.random() + ' ' + Math.random();
-            var ani_pos = rightHand.getElementsByClassName('position')[0];
-            //console.log('ani_pos:', ani_pos.getAttribute('to'))
-            ani_pos.setAttribute('from',  '1 1 1');
-            ani_pos.setAttribute('to', '-1 0 -3' );
-            //console.log('ani_pos:',ani_pos)
-            rightHand.emit('changePosition', {'position': position});
-        }
+        let handEl = (hand==='left_hand') ? leftHand : rightHand;
+        handEl.setAttribute('position', position);
+        handEl.setAttribute('rotation', rotation);
     }
   }
 
