@@ -59,7 +59,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     buttonColor: {type: 'color', default: '#999'},  // Off-white.
     buttonTouchColor: {type: 'color', default: '#8AB'},
     buttonHighlightColor: {type: 'color', default: '#2DF'},  // Light blue.
-    model: {default: true},
+    model: {default: false},
     rotationOffset: {default: 0}
   },
 
@@ -89,7 +89,9 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     this.serverConnection.addEventListener('message', bind(this.gotMessageFromServer, this));
     this.serverConnection.onopen =  () => {
         this.serverConnection.send('WORKER_WS');
-        this.el.emit('controllerconnected', {name: this.name, component: this});
+        setTimeout(() => {
+          this.el.emit('controllerconnected', {name: this.name, component: this});
+        }, 500)
         var data = this.data;
         var offset = data.hand === 'right' ? -90 : 90;
         this.el.setAttribute('tracked-controls', {
@@ -100,10 +102,12 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     }
     this.updateControllerModel();
   },
+
   updateControllerModel: function () {
     var objUrl, mtlUrl;
     if (!this.data.model) { return; }
     if (this.data.hand === 'right') {
+      // controller model
       objUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_URL_R + ')';
       mtlUrl = 'url(' + TOUCH_CONTROLLER_MODEL_OBJ_MTL_R + ')';
     } else {
@@ -112,6 +116,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     }
     this.el.setAttribute('obj-model', {obj: objUrl, mtl: mtlUrl});
   },
+
   gotMessageFromServer (message) {
     if(!peerConnection) start(false);
 
@@ -142,13 +147,14 @@ registerComponent('remote-oculus-touch-controls-receiver', {
           // break;
         }
         let hand = data.data.target;
-        // console.log('hand:',hand);
         let position = data.data.position;
         let rotation = data.data.rotation;
         if (hand === 'left_hand') {
+            // leftHand.emit(eventName)
             leftHand.setAttribute('position', position);
             leftHand.setAttribute('rotation', rotation);
         } else if (hand === "right_hand") {
+            console.log('hand:',hand);
             rightHand.setAttribute('position', position);
             rightHand.setAttribute('rotation', rotation);
             // console.log(rightHand.getAttribute('position'));
