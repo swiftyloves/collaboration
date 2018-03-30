@@ -150,19 +150,23 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     }
 
     // Hand gesture
-    if (data.type && data.data) {
+    if (data.type) {
+        let type = data.type;
+        let target = data.target;
+        let handEl = (target==='left_hand') ? leftHand : rightHand;
+
         // console.log('data.data:',data.data);
         if (!data.data) {
-          console.log('!data.data: ', data);
-          // break;
+          //console.log('!data.data: ', data.type);
+          handEl.emit(type);
+        } else if (type === 'base') {
+          let position = data.data.position;
+          let rotation = data.data.rotation;
+          handEl.setAttribute('position', position);
+          handEl.setAttribute('rotation', rotation);
+        } else if (type !== 'base' && type!=='camera') {
+          handEl.emit(type, data);
         }
-        let hand = data.data.target;
-        let position = data.data.position;
-        let rotation = data.data.rotation;
-
-        let handEl = (hand==='left_hand') ? leftHand : rightHand;
-        handEl.setAttribute('position', position);
-        handEl.setAttribute('rotation', rotation);
     }
   }
 

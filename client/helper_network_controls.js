@@ -26,7 +26,7 @@ registerComponent('remote-oculus-camera', {
           position:this.el.getAttribute('position'),
           rotation:this.el.getAttribute('rotation')
         }}));
-    }, 1000);
+    }, 50);
   }
 });
 
@@ -91,9 +91,9 @@ registerComponent('remote-oculus-touch-controls', {
           position:this.el.getAttribute('position'),
           rotation:this.el.getAttribute('rotation')
         });
-    }, 50);
+    }, 30);
 
-    console.log('helper initialized');
+    //console.log('helper initialized');
     this.serverConnection = new WebSocket('ws://' + window.location.host);
     serverConnection = this.serverConnection;
     this.serverConnection.onmessage = bind(this.gotMessageFromServer, this);
@@ -202,21 +202,19 @@ registerComponent('remote-oculus-touch-controls', {
     // Pass along changed event with button state, using the buttom mapping for convenience.
     this.emitOverWebsocket(button + 'changed', evt.detail.state);
   },
-  emitOverWebsocket(type, data) {
-    // console.log('emitOverWebsocket data:', data);
-    // console.log('this.el', this.el);
-    if (data) {
-        // console.log(typeof(data))
-        // console.log(data.pressed);// gestureData = data;
-        data['position'] = this.el.getAttribute('position');
-        data['rotation'] = this.el.getAttribute('rotation');
+  emitOverWebsocket(type, gestureData) {
+    var target = this.el.id;
+    if (gestureData) {
+        let data = {};
+        for (let key in gestureData) {
+          data[key] = gestureData[key];
+        }
+        // data['position'] = this.el.getAttribute('position');
+        // data['rotation'] = this.el.getAttribute('rotation');
 
-        data['target'] = this.el.id;
-        // console.log('gestureData: ', data)
-        // console.log('JSON.stringify ', JSON.stringify(data));
-        ws.send(JSON.stringify({type, data}));
+        ws.send(JSON.stringify({type, data, target}));
     } else {
-        ws.send(JSON.stringify({type}))
+        ws.send(JSON.stringify({type, target}))
     }
   },
 
