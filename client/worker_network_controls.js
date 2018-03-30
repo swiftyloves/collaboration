@@ -89,9 +89,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     this.serverConnection.addEventListener('message', bind(this.gotMessageFromServer, this));
     this.serverConnection.onopen =  () => {
         this.serverConnection.send('WORKER_WS');
-        setTimeout(() => {
-          this.el.emit('controllerconnected', {name: this.name, component: this});
-        }, 500)
+
         var data = this.data;
         var offset = data.hand === 'right' ? -90 : 90;
         this.el.setAttribute('tracked-controls', {
@@ -100,7 +98,19 @@ registerComponent('remote-oculus-touch-controls-receiver', {
           rotationOffset: data.rotationOffset !== -999 ? data.rotationOffset : offset
         });
     }
-    this.updateControllerModel();
+    setTimeout(() => {
+      this.el.emit('controllerconnected', {name: this.name, component: this});
+    }, 500)
+    this.el.addEventListener('changePosition', (evt) => {
+        // var otherBox = document.querySelector('#otherbox');
+      //console.log('changePosition~');
+        // this.el.setAttribute('position', '-2 1 -3');
+      //console.log('evt:', evt);
+      //console.log('po:',this)
+      //ani_pos = this.el.getElementsByClassName('position')[0];
+      //ani_pos.setAttribute('from', ani_pos.getAttribute('to'));
+    }, true)
+    // this.updateControllerModel();
   },
 
   updateControllerModel: function () {
@@ -149,15 +159,29 @@ registerComponent('remote-oculus-touch-controls-receiver', {
         let hand = data.data.target;
         let position = data.data.position;
         let rotation = data.data.rotation;
+        let original_posiiton = this.el.getAttribute('position');
+
         if (hand === 'left_hand') {
             // leftHand.emit(eventName)
             leftHand.setAttribute('position', position);
             leftHand.setAttribute('rotation', rotation);
         } else if (hand === "right_hand") {
             console.log('hand:',hand);
-            rightHand.setAttribute('position', position);
-            rightHand.setAttribute('rotation', rotation);
+            // console.log('position: ', position);
+            position = position.x + " " + position.y + " " + position.z;
+            //console.log('position:', position);
+            //rightHand.setAttribute('animation', 'property: position; to:' + position);
+            // rightHand.setAttribute('animation', 'property: position; to: ' + position);
+            // rightHand.setAttribute('rotation', rotation);
+            //rightHand.flushToDOM();
             // console.log(rightHand.getAttribute('position'));
+            let randomPosition = Math.random() + ' ' + Math.random() + ' ' + Math.random();
+            var ani_pos = rightHand.getElementsByClassName('position')[0];
+            //console.log('ani_pos:', ani_pos.getAttribute('to'))
+            ani_pos.setAttribute('from',  '1 1 1');
+            ani_pos.setAttribute('to', '-1 0 -3' );
+            //console.log('ani_pos:',ani_pos)
+            rightHand.emit('changePosition', {'position': position});
         }
     }
   }

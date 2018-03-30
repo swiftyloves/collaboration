@@ -21,7 +21,29 @@
       </a-box> -->
       <!-- Hands -->
       <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="hand:left"></a-entity>
-      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right"></a-entity>
+      <!-- <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right" ></a-entity> -->
+      <!-- <a-light intensity="3" color="#00ffff" position="-5.72 6.65 0.80" animation__color="property:color; dir:alternate; dur:2000; easing:easeInOutSine; loop:true; to:#ff0000" alongpath="path:10,10,-10 -20,10,-10 10,0,-10; closed:true; dur:12000"></a-light> -->
+      <a-light intensity="5" color="#ff0000" position="8.60 6.65 0.80" animation__color="property:color; dir:alternate; dur:2000; easing:easeInOutSine; loop:true; to:#0000ff" alongpath="path:-2,-2,5 2,-1,5 0,-1,5; closed:true; dur:3000;"></a-light>
+      <!-- <a-cylinder color="#F55" radius="0.1"
+                animation="property: color; dir: alternate; dur: 1000;
+                           easing: easeInSine; loop: true; to: #5F5"
+                animation__scale="property: scale; dir: alternate; dur: 200;
+                           easing: easeInSine; loop: true; to: 1.2 1 1.2"
+                animation__yoyo="property: position; dir: alternate; dur: 1000;
+                                 easing: easeInSine; loop: true; to: -2 1 4">
+      </a-cylinder> -->
+
+      <!-- <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right" animation__color="property:position; dir:alternate; dur:2000; easing:easeInOutSine; loop:true;  to:0 0 -1"></a-entity> -->
+
+
+
+      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right">
+        <!-- <a-animation begin="changePosition" attribute="position" from="-1 1 -4" to="-2 1 -4"></a-animation> -->
+        <!-- <a-animation id="right_hand_animation" begin="changePosition" attribute="position" from="-1 1 -4" to="-2 1 -4"></a-animation> -->
+        <a-animation begin="changePosition" class="position" begin="changePosition" attribute="position" from="1 1 1" to="-0.5 -0.2 -3"></a-animation>
+        <!-- <a-animation class="rotation" begin="changePosition" attribute="rotation" from="1 0 1" to="2 4 -8"></a-animation> -->
+      </a-entity>
+
       <a-camera remote-oculus-camera-receiver=""></a-camera>
     </a-scene>
 

@@ -132,6 +132,7 @@ registerComponent('remote-oculus-touch-controls', {
         if (hand === 'left_hand') {
             leftHand.setAttribute('position', position);
             leftHand.setAttribute('rotation', rotation);
+            //leftHand.flushToDOM();
         } else if (hand === "right_hand") {
             rightHand.setAttribute('position', position);
             rightHand.setAttribute('rotation', rotation);
