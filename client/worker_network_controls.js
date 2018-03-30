@@ -97,8 +97,8 @@ registerComponent('remote-oculus-touch-controls-receiver', {
           controller: 0,
           rotationOffset: data.rotationOffset !== -999 ? data.rotationOffset : offset
         });
-        this.updateControllerModel();
     }
+    this.updateControllerModel();
   },
   updateControllerModel: function () {
     var objUrl, mtlUrl;
