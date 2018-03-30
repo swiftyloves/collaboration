@@ -57,46 +57,6 @@ function start(isCaller) {
     }
 }
 
-function gotMessageFromServer(event) {
-    if(!peerConnection) start(false);
-
-    var data = JSON.parse(event.data);
-    console.log('worker js event.data', data);
-    if (data.signal) {
-        var signal = JSON.parse(data['signal']);
-
-        // Ignore messages from ourself
-        if(signal.uuid == uuid) return;
-
-        if(signal.sdp) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
-                // Only create answers in response to offers
-                if(signal.sdp.type == 'offer') {
-                    peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
-                }
-            }).catch(errorHandler);
-        } else if(signal.ice) {
-            peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
-        }
-    }
-
-    // Hand gesture
-    console.log('hand gesture:');
-    if (data.type) {
-        console.log('data.data:',data.data);
-        /*let handId = data['handId'];
-        var position = data['position'];
-        var rotation = data['rotation'];
-        console.log(handId);
-        console.log(position);
-        console.log(rotation);
-        if (handId === 'right_hand') {
-            rightHand.setAttribute('position',  position);
-            rightHand.setAttribute('rotation',  rotation);
-        }*/
-    }
-}
-
 function gotIceCandidate(event) {
   if(event.candidate != null) {
     serverConnection.send(JSON.stringify({'ice': event.candidate, 'uuid': uuid}));
