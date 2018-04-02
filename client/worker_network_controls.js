@@ -28,16 +28,6 @@ var PIVOT_OFFSET = {x: 0, y: -0.015, z: 0.04};
  * controller buttons: thumbstick, trigger, grip, xbutton, ybutton, surface
  * Load a controller model and highlight the pressed buttons.
  */
-
- // leftHand = document.getElementById('left_hand');
- // leftHand.setAttribute('position', "1 -1 3");
- // this.el.setAttribute('positoin', 'z', position.z);
- // leftHand.setAttribute('positoin', '0.199 -0.46 -0.3');
- // this.el.flushToDOM();
- // leftHand.flushToDOM();
- // console.log(leftHand);
- // console.log(this.el);
- // console.log(leftHand.getAttribute('position'));
  registerComponent('remote-oculus-camera-receiver', {
    init: function() {
      ws.addEventListener('message',(message) => {
@@ -101,15 +91,6 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     setTimeout(() => {
       this.el.emit('controllerconnected', {name: this.name, component: this});
     }, 500)
-    this.el.addEventListener('changePosition', (evt) => {
-        // var otherBox = document.querySelector('#otherbox');
-      //console.log('changePosition~');
-        // this.el.setAttribute('position', '-2 1 -3');
-      //console.log('evt:', evt);
-      //console.log('po:',this)
-      //ani_pos = this.el.getElementsByClassName('position')[0];
-      //ani_pos.setAttribute('from', ani_pos.getAttribute('to'));
-    }, true)
     // this.updateControllerModel();
   },
 
@@ -153,7 +134,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     if (data.type) {
         let type = data.type;
         let target = data.target;
-        let handEl = (target==='left_hand') ? leftHand : rightHand;
+        let handEl = (target === 'left_hand') ? leftHand : rightHand;
 
         // console.log('data.data:',data.data);
         if (!data.data) {
@@ -164,8 +145,6 @@ registerComponent('remote-oculus-touch-controls-receiver', {
           let rotation = data.data.rotation;
           handEl.setAttribute('position', position);
           handEl.setAttribute('rotation', rotation);
-        } else if (type !== 'base' && type!=='camera') {
-          handEl.emit(type, data);
         }
     }
   }
