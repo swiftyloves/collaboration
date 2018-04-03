@@ -211,6 +211,7 @@ registerComponent('remote-oculus-touch-controls', {
         }
         // data['position'] = this.el.getAttribute('position');
         // data['rotation'] = this.el.getAttribute('rotation');
+        //console.log('data:', data);
 
         ws.send(JSON.stringify({type, data, target}));
     } else {
