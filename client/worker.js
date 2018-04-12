@@ -36,11 +36,14 @@ function pageReady() {
     } else {
         alert('Your browser does not support getUserMedia API');
     }
+    
+    
 }
 
 function getUserMediaSuccess(stream) {
   localStream = stream;
   if (localVideo) {
+    console.log('getUserMediaSuccess')
     localVideo.srcObject = stream;
   }
 }
@@ -72,9 +75,10 @@ function createdDescription(description) {
 }
 
 function gotRemoteStream(event) {
-    console.log('got remote stream');
     if (remoteVideo) {
+      console.log('got remote stream');
         remoteVideo.srcObject = event.streams[0];
+      console.log('got remote stream 2');
     }
 }
 

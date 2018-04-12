@@ -40,6 +40,7 @@ var PIVOT_OFFSET = {x: 0, y: -0.015, z: 0.04};
          }
        }
      });
+
    }
  });
 
@@ -90,8 +91,25 @@ registerComponent('remote-oculus-touch-controls-receiver', {
     }
     setTimeout(() => {
       this.el.emit('controllerconnected', {name: this.name, component: this});
+      
     }, 500)
+    setTimeout(() => {
+      let m = this.el.getObject3D('mesh');
+      if (this.el.id === "left_hand") {
+          m.material["color"] = {r: 0.082, g: 0.098, b: 0.898};
+      } else {
+          m.material["color"] = {r: 0.898, g: 0.082, b: 0.121};
+      }
+      m.material["opacity"] = 0.65;
+      m.material["transparent"] = true; 
+      console.log('m:', m);
+    }, 2000)
     // this.updateControllerModel();
+    this.el.addEventListener('model-loaded', () => {
+    
+
+    });
+    
   },
 
   updateControllerModel: function () {
@@ -110,6 +128,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
 
   gotMessageFromServer (message) {
     if(!peerConnection) start(false);
+    // console.log('peerConnection:',peerConnection)
 
     var data = JSON.parse(message.data);
     if (data.signal) {
@@ -124,6 +143,7 @@ registerComponent('remote-oculus-touch-controls-receiver', {
                 if(signal.sdp.type == 'offer') {
                     peerConnection.createAnswer().then(createdDescription).catch(errorHandler);
                 }
+                print('123')
             }).catch(errorHandler);
         } else if(signal.ice) {
             peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);

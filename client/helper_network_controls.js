@@ -209,9 +209,13 @@ registerComponent('remote-oculus-touch-controls', {
         for (let key in gestureData) {
           data[key] = gestureData[key];
         }
+      // console.log('gestureData data',data)
         // data['position'] = this.el.getAttribute('position');
         // data['rotation'] = this.el.getAttribute('rotation');
         //console.log('data:', data);
+        //console.log('type:',type);
+        //console.log(JSON.stringify({type, data, target}))
+
 
         ws.send(JSON.stringify({type, data, target}));
     } else {

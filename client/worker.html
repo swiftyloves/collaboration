@@ -13,13 +13,13 @@
   </head>
   <body style="background-color: #777">
     <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
+    <video id="localVideo" autoplay style="height: 700px; display: block; position: absolute;"></video>
 
-    <a-scene fog="color: #bc483e; near: 0; far: 65;">
-      <video id="localVideo" autoplay style="height: 755px; display: block;"></video>
+    <a-scene fog="color: #bc483e; near: 0; far: 65;" style="opacity: 1; position: absolute;">
       <!-- Hands -->
-      <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="hand:left"></a-entity>
-      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right" ></a-entity>
-      <a-light intensity="5" color="#ff0000" position="8.60 6.65 0.80" animation__color="property:color; dir:alternate; dur:2000; easing:easeInOutSine; loop:true; to:#0000ff" alongpath="path:-2,-2,5 2,-1,5 0,-1,5; closed:true; dur:3000;"></a-light>
+      <a-entity id="left_hand" hand-controls="left" remote-oculus-touch-controls-receiver="hand:left" ></a-entity>
+      <a-entity id="right_hand" hand-controls="right" remote-oculus-touch-controls-receiver="hand:right"></a-entity>
+      <!-- <a-light intensity="1" color="rgba(234, 98, 159, 0.38)" position="8.60 6.65 0.80" animation__color="property:color; dir:alternate; dur:2000; easing:easeInOutSine; loop:true; to:#0000ff; opacity: 0.4" alongpath="path:-2,-2,5 2,-1,5 0,-1,5; closed:true; dur:3000;"></a-light> -->
 
       <a-camera remote-oculus-camera-receiver=""></a-camera>
     </a-scene>
